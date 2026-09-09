@@ -8,9 +8,9 @@
 // I AM NOT DONE
 
 enum Message {
-    Move { x: i32, y: i32 },
+    Move { x: u8, y: u8 },
     Echo(String),
-    ChangeColor(i32, i32, i32),
+    ChangeColor(u8, u8, u8),
     Quit,
 }
 struct Point {
@@ -35,7 +35,7 @@ impl State {
     }
 
     fn echo(&mut self, s: String) {
-        self.message = s
+        self.message = s;
     }
 
     fn move_position(&mut self, p: Point) {
@@ -47,11 +47,14 @@ impl State {
         // variants
         // Remember: When passing a tuple as a function argument, you'll need
         // extra parentheses: fn function((t, u, p, l, e))
-        match Message {
-            ChangeColor => self.change_color(ChangeColor),
-            Move => self.move_position(Move),
-            Echo => self.echo(echo.0),
-            Quit => self.quit(),
+        match message {
+            Message::ChangeColor(a,b,c) => self.change_color((a,b,c)),
+            Message::Move { x: to_x, y: to_y }  => self.move_position(Point{
+                x: to_x,
+                y: to_y
+            }),
+            Message::Echo(s) => self.echo(s),
+            Message::Quit => self.quit(),
         }
     }
 }
@@ -70,7 +73,7 @@ mod tests {
         };
         state.process(Message::ChangeColor(255, 0, 255));
         state.process(Message::Echo(String::from("hello world")));
-        state.process(Message::Move(Point { x: 10, y: 15 }));
+        state.process(Message::Move{x : 10,y : 15});
         state.process(Message::Quit);
 
         assert_eq!(state.color, (255, 0, 255));
